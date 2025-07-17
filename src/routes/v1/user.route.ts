@@ -1,10 +1,11 @@
 import { Router } from 'express';
 
 import { upload } from '../../configs/aws.config';
-import { uploadResumeHandler } from '../../controllers/user.controller';
+import {  getUserDetailsById, uploadResumeHandler } from '../../controllers/user.controller';
+import authenticationMiddleware from '../../middlewares/auth.middleware';
 
 const userRouter = Router();
 
-userRouter.post('/upload-resume', upload.single('file'), uploadResumeHandler);
-
+userRouter.post('/upload-resume',authenticationMiddleware, upload.single('file'), uploadResumeHandler);
+userRouter.get('/:id',authenticationMiddleware, getUserDetailsById);
 export default userRouter;

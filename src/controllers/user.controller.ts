@@ -1,5 +1,14 @@
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
+
+import UserRepository from '../repository/user.repository';
+import UserProfileRepository from '../repository/userProfile.repository';
+import UserService from '../services/user.service';
+
+const userRepository = new UserRepository();
+const userProfileRepository = new UserProfileRepository();
+
+const userService = new UserService(userRepository, userProfileRepository);
 
 async function uploadResumeHandler(req: Request, res: Response) {
     if (!req.file) {
@@ -26,6 +35,24 @@ async function uploadResumeHandler(req: Request, res: Response) {
     });
 }
 
+async function getUserDetailsById(req: Request, res: Response, next: NextFunction) {
+    try {
+        const id = req.params.id;
+        const userDetails = await userService.findByIdService(Number(id));
+        
+        res.status(StatusCodes.OK).json({
+            success: true,
+            message: 'User details retrieved successfully',
+            data: userDetails,
+            error: {}
+        });
+
+    } catch (error) {
+        next(error); 
+    }
+    
+}
+
 export {
-    uploadResumeHandler
-};
+    getUserDetailsById,
+    uploadResumeHandler};

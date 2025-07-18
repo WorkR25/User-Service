@@ -12,6 +12,7 @@ class UserProfileRepository extends BaseRepository<UserProfile> {
         const record = await this.model.create(data, { transaction });
         return record;
     }
+
 }
 
 export default UserProfileRepository;

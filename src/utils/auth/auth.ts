@@ -11,7 +11,7 @@ const {SALT,JWT_SECRET } = serverConfig;
 // from env variables
 
 
-export const checkPassword = async (password: string, hashedPassword: string): Promise<boolean> => {
+export async function checkPassword (password: string, hashedPassword: string): Promise<boolean> {
     try {
         const isMatch = await bcrypt.compare(password, hashedPassword);
         return isMatch;
@@ -21,7 +21,7 @@ export const checkPassword = async (password: string, hashedPassword: string): P
 
 };
 
-export const hashPassword = async (password: string): Promise<string> => {
+export async function hashPassword (password: string): Promise<string> {
     try {
         const hashed = await bcrypt.hash(password, SALT);
         return hashed;
@@ -40,7 +40,6 @@ export function createToken(payload: JwtTokenInput): string {
 }
 
 export function verifyToken(token: string) {
-
     try {
         return jwt.verify(token, JWT_SECRET) as UserTokenPayload;
     } catch (error) {

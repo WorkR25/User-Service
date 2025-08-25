@@ -58,7 +58,6 @@ export const updateUserProfileSchema = z.object({
         .string({
             required_error: 'Resume URL is required',
         })
-        .url('Resume URL must be a valid URL')
         .max(255, 'Resume URL must be at most 255 characters')
         .optional(),
 
@@ -66,7 +65,6 @@ export const updateUserProfileSchema = z.object({
         .string({
             required_error: 'LinkedIn URL is required',
         })
-        .url('LinkedIn URL must be a valid URL')
         .max(255, 'LinkedIn URL must be at most 255 characters')
         .optional(),
 

@@ -7,8 +7,8 @@ import { createSkillSchema, deleteSkillsSchema, updateSkillSchema } from '../../
 
 const skillRouter = Router();
 
-skillRouter.get('/', authenticationMiddleware, skillController.getSkillHandler );
-skillRouter.get('/:id', authenticationMiddleware, skillController.getSkillByIdHandler );
+skillRouter.get('/', skillController.getSkillHandler );
+skillRouter.get('/:id', skillController.getSkillByIdHandler );
 skillRouter.post('/', authenticationMiddleware, validateRequestBody(createSkillSchema), skillController.createSkillHandler );
 skillRouter.patch('/:id', authenticationMiddleware, validateRequestBody(updateSkillSchema), skillController.updateSkillHandler );
 skillRouter.delete('/:id', authenticationMiddleware, validateRequestBody(deleteSkillsSchema), skillController.deleteSkillHandler );

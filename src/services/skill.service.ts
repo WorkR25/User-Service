@@ -2,6 +2,7 @@
 import { CreateSkillDto, DeleteSkillDto, UpdateSkillDto } from '../dtos/skill.dto';
 import SkillRepository from '../repository/skill.repository';
 import UserRepository from '../repository/user.repository';
+import { allRole } from '../types/AllRoleTypes';
 import { NotFoundError, UnauthorizedError } from '../utils/errors/app.error';
 
 class SkillService {
@@ -28,9 +29,12 @@ class SkillService {
             throw new NotFoundError('No roles found ');
         }
         
-        if(!roleNames.includes('admin')){
-            throw new UnauthorizedError('Not an admin');
-        }
+        const allowedRoles : allRole[] = ['admin', 'operations_admin'];
+        roleNames.forEach((role) => {
+            if (!allowedRoles.includes(role as allRole)) {
+                throw new UnauthorizedError('User not authorized');
+            }
+        });
 
         const foundSkills = await this.skillRepository.validateSkillNames(skillList);
         // const freshSKills = skillList.filter((skill)=>{return !foundSkills.map((skill)=> skill.name).includes(skill)});

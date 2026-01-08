@@ -9,6 +9,7 @@ import { updateUserProfileSchema, updateUserSchema } from '../../validators/user
 const userRouter = Router();
 
 userRouter.get('/pages', authenticationMiddleware, userController.getAllUsers);
+userRouter.get('/all-candiates/csv', authenticationMiddleware, userController.getAllCandidatesCSV);
 userRouter.get('/', authenticationMiddleware, userController.getSelfDetails);
 userRouter.get('/:id', authenticationMiddleware, userController.getUserDetailsById);
 userRouter.post('/upload-resume',authenticationMiddleware, upload.single('file'), userController.uploadResumeHandler);

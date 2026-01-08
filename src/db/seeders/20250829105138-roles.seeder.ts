@@ -5,7 +5,8 @@ export default {
         await queryInterface.bulkInsert('roles', [
             { name: 'admin' },
             { name: 'recruiter' },
-            { name: 'jobseeker' }
+            { name: 'jobseeker' },
+            { name: 'operations_admin' },
         ]);
     },
 

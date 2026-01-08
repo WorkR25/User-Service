@@ -14,7 +14,8 @@ class RoleRepository extends BaseRepository<Role> {
                 name:{
                     [Op.like]: role+'%'
                 }
-            }
+            },
+            attributes: ['name', 'id']
         });
                 
         return record;

@@ -1,7 +1,9 @@
+import { json2csv } from 'json-2-csv';
 import { JsonWebTokenError, TokenExpiredError } from 'jsonwebtoken';
 
 import logger from '../configs/logger.config';
 import sequelize from '../db/models/sequelize';
+import User from '../db/models/user.model';
 import { FindUserByNameDto, LoginUserDto, RegisterUserDto } from '../dtos/user.dto';
 import { UpdateUserDto } from '../dtos/userProfile.dto';
 import RoleRepository from '../repository/role.repository';
@@ -154,6 +156,34 @@ class UserService {
     async softDeleteService(id: number) {
         return await this.userRepository.softDelete(id);
     }
+
+    async getAllCandidatesForCSVService({ userId }: { userId: number }) {
+        try {
+            const userRoles = await this.userRepository.getUserRolesById(userId);
+
+            const roleNames = userRoles.roles?.map(r => r.name);
+            if (!roleNames) throw new NotFoundError('No roles found');
+            if (!roleNames.includes('admin'))
+                throw new UnauthorizedError('Not an admin');
+
+            const raw = await this.userRepository.findAllCandidatesForCSV();
+
+            const records = raw.map((c) => {
+                return c.get({ plain: true }) as User;
+            });
+
+            const csv = json2csv(records, { keys: ['id', 'fullName', 'email', 'phoneNo', 'graduationYear', 'created_at'] });
+            return csv;
+
+        } catch (error) {
+            logger.error(error);
+    
+            if (error instanceof UnauthorizedError) throw error;
+
+            throw new InternalServerError('Error while creating CSV');
+        }
+    }
+
 
     isAuthenticated(authToken: string){
         try {

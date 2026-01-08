@@ -4,15 +4,16 @@ import { StatusCodes } from 'http-status-codes';
 import RoleRepository from '../repository/role.repository';
 import UserRepository from '../repository/user.repository';
 import RoleService from '../services/role.service';
+import { AuthRequest } from '../types/AuthRequest';
 
 const userRepository= new UserRepository();
 const roleRepository= new RoleRepository();
 
 const roleService= new RoleService(userRepository, roleRepository);
 
-async function createRoles(req: Request , res: Response, next: NextFunction){
+async function createRoles(req: AuthRequest , res: Response, next: NextFunction){
     try {
-        const userId = req.params.id;
+        const userId = Number(req.user?.id);
         const {name} = req.body;
 
         const createRolesData = {

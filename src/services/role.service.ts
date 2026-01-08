@@ -1,7 +1,8 @@
 import { CreateRoleDto, DeleteRoleDto, GetRoleDto, UpdateRoleDto } from '../dtos/role.dto';
 import RoleRepository from '../repository/role.repository';
 import UserRepository from '../repository/user.repository';
-import { NotFoundError, UnauthorizedError } from '../utils/errors/app.error';
+import { allRole } from '../types/AllRoleTypes';
+import { BadRequestError, NotFoundError, UnauthorizedError } from '../utils/errors/app.error';
 
 class RoleService {
     private userRepository : UserRepository;
@@ -50,6 +51,11 @@ class RoleService {
             throw new UnauthorizedError('Not an admin');
         }
 
+        const check = await this.roleRepository.getRoles(name);
+        if(check.length > 0){
+            throw new BadRequestError('Role already exists');
+        }
+
         const response = await this.roleRepository.create({name});
         return response;
     }
@@ -96,6 +102,21 @@ class RoleService {
     async getRoleByNameService(role : string){
         const record = await this.roleRepository.getRoles(role);
         return record ;
+    }
+
+    async isAuthorizedGeneric({userId, allowedRoles}: {userId: number, allowedRoles: allRole[]}){
+        const userRoles = await this.userRepository.getUserRolesById(userId);
+        
+        const roleNames = userRoles.roles?.map((role) => role.name);
+        if(!roleNames) {
+            throw new NotFoundError('No roles found ');
+        }
+                
+        roleNames.forEach((role) => {
+            if (!allowedRoles.includes(role as allRole)) {
+                throw new UnauthorizedError('User not authorized');
+            }
+        });
     }
 
 };

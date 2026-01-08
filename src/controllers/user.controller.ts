@@ -173,6 +173,19 @@ async function getAllUsers(req: AuthRequest, res: Response, next: NextFunction){
     }
 }
 
+async function getAllCandidatesCSV(req: AuthRequest, res: Response, next: NextFunction){
+    try {
+        const userId = Number( req.user?.id );
+        const stringCSV = await userService.getAllCandidatesForCSVService({userId});
+        res.setHeader('Content-Type', 'text/csv')
+            .setHeader('Content-Disposition', 'attachment; filename="candidates.csv"')
+            .status(StatusCodes.OK)
+            .send(stringCSV);
+    } catch (error) {
+        next(error);
+    }
+}
+
 export default {
     getAllUsers,
     getSelfDetails,
@@ -181,5 +194,6 @@ export default {
     uploadResumeHandler,
     getUserDetailsById,
     getUsersByName,
-    getUsersByEmail
+    getUsersByEmail,
+    getAllCandidatesCSV
 };

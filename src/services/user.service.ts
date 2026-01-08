@@ -172,7 +172,7 @@ class UserService {
                 return c.get({ plain: true }) as User;
             });
 
-            const csv = json2csv(records, { keys: ['id', 'fullName', 'email', 'phoneNo', 'graduationYear', 'created_at'] });
+            const csv = json2csv(records, { keys: [ 'fullName', 'email', 'phoneNo', 'graduationYear'] });
             return csv;
 
         } catch (error) {

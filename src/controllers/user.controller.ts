@@ -158,10 +158,11 @@ async function getUserDetailsById(req: AuthRequest, res: Response, next: NextFun
 async function getAllUsers(req: AuthRequest, res: Response, next: NextFunction){
     try {
         const id = Number(req.user?.id);
+        const details = String(req.query.details);
         const page = Number(req.query.page) || 1;
         const limit = Number(req.query.limit) || 10;
 
-        const response = await userService.findAllCandidatesService(id, page, limit);
+        const response = await userService.findAllCandidatesService({userId: id, page, limit, details});
         res.status(StatusCodes.OK).json({
             success: true,
             message: 'Users fetched successfully',
@@ -176,7 +177,8 @@ async function getAllUsers(req: AuthRequest, res: Response, next: NextFunction){
 async function getAllCandidatesCSV(req: AuthRequest, res: Response, next: NextFunction){
     try {
         const userId = Number( req.user?.id );
-        const stringCSV = await userService.getAllCandidatesForCSVService({userId});
+        const details = String( req.query.details );
+        const stringCSV = await userService.getAllCandidatesForCSVService({userId, details});
         res.setHeader('Content-Type', 'text/csv')
             .setHeader('Content-Disposition', 'attachment; filename="candidates.csv"')
             .status(StatusCodes.OK)

@@ -59,10 +59,12 @@ class UserService {
             }
             const roles = await this.roleRepository.getRoles('jobseeker');
             const roleId = roles[0].id ;
+
+            const { currentCtc, currentCompany, details, domain } = userData;
             const transaction = await sequelize.transaction();
             try {
                 const newUser = await this.userRepository.create(userData, transaction);
-                await this.userProfileRepository.create({ userId: newUser.id}, transaction);
+                await this.userProfileRepository.create({ userId: newUser.id, currentCtc, currentCompany, details, domain}, transaction);
                 await this.userRoleRepository.createUserRole({userId: newUser.id, roleId: roleId, transaction});
                 await transaction.commit();
 
@@ -104,7 +106,7 @@ class UserService {
         }
     }
 
-    async findAllCandidatesService(userId: number, page: number, limit: number) {
+    async findAllCandidatesService({userId, page, limit, details}:{userId: number, page: number, limit: number, details: string}) {
         try {
             const userRoles = await this.userRepository.getUserRolesById(userId);
         
@@ -120,7 +122,7 @@ class UserService {
             const offset = (page - 1) * limit;
 
 
-            const { rows: records, count: totalCount } = await this.userRepository.findAllCandidates({limit, offset});
+            const { rows: records, count: totalCount } = await this.userRepository.findAllCandidates({limit, offset, details});
             const totalPages = Math.ceil(totalCount / limit);
 
             return {
@@ -157,7 +159,7 @@ class UserService {
         return await this.userRepository.softDelete(id);
     }
 
-    async getAllCandidatesForCSVService({ userId }: { userId: number }) {
+    async getAllCandidatesForCSVService({ userId, details }: { userId: number, details: string }) {
         try {
             const userRoles = await this.userRepository.getUserRolesById(userId);
 
@@ -166,14 +168,19 @@ class UserService {
             if (!roleNames.includes('admin'))
                 throw new UnauthorizedError('Not an admin');
 
-            const raw = await this.userRepository.findAllCandidatesForCSV();
+            const raw = await this.userRepository.findAllCandidatesForCSV({details});
 
             const records = raw.map((c) => {
                 return c.get({ plain: true }) as User;
             });
 
-            const csv = json2csv(records, { keys: [ 'fullName', 'email', 'phoneNo', 'graduationYear'] });
-            return csv;
+            if(details == 'Fresher'){
+                const csv = json2csv(records, { keys: [ 'fullName', 'email', 'phoneNo', 'graduationYear','domain'] });
+                return csv;
+            }else{
+                const csv = json2csv(records, { keys: [ 'fullName', 'email', 'phoneNo', 'graduationYear', 'profile.currentCtc', 'profile.currentCompany', 'profile.domain'] });
+                return csv;
+            }
 
         } catch (error) {
             logger.error(error);

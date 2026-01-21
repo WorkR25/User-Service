@@ -2,11 +2,12 @@ export type UpdateUserProfileDto = {
     id: number;
     bio?: string;
     yearsOfExperience?: number;
-    isFresher?: boolean;
-    currentCtc?: number;
+    details?: string;
+    currentCtc?: string;
     linkedinUrl?: string;
     currentLocationId?: number; 
-    currentCompanyId?: number;
+    currentCompany?: string;
+    domain: string;
 }
 
 export type UpdateUserDto = {

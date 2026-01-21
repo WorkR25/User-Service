@@ -8,11 +8,12 @@ class UserProfile extends Model<InferAttributes<UserProfile>, InferCreationAttri
     declare userId: ForeignKey<User['id']>;
     declare bio: CreationOptional<string | null>;
     declare yearsOfExperience: CreationOptional<number | null>;
-    declare isFresher: CreationOptional<boolean | null>;
-    declare currentCtc: CreationOptional<number | null>;
+    declare details: CreationOptional<string | null>;
+    declare currentCtc: CreationOptional<string | null>;
     declare resumeUrl: CreationOptional<string | null>;
     declare linkedinUrl: CreationOptional<string | null>;
-    declare currentCompanyId: CreationOptional<number | null>;
+    declare currentCompany: CreationOptional<string | null>;
+    declare domain: CreationOptional<string | null>;
     declare currentLocationId: CreationOptional<ForeignKey<City['id'] | null>>;
 
     declare user?: NonAttribute<User>;
@@ -46,13 +47,13 @@ UserProfile.init({
         allowNull: true,
     },
 
-    isFresher: {
-        type: DataTypes.BOOLEAN,
+    details: {
+        type: DataTypes.STRING(255),
         allowNull: true,
     },
 
     currentCtc: {
-        type: DataTypes.DECIMAL(7, 2),
+        type: DataTypes.STRING(255),
         allowNull: true
     },
 
@@ -77,8 +78,13 @@ UserProfile.init({
         onUpdate: 'CASCADE'
     },
 
-    currentCompanyId: {
-        type: DataTypes.INTEGER.UNSIGNED,
+    currentCompany: {
+        type: DataTypes.STRING(255),
+        allowNull: true
+    },
+
+    domain: {
+        type: DataTypes.STRING(255),
         allowNull: true
     }
 }, {

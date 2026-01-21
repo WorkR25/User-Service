@@ -40,18 +40,13 @@ export const updateUserProfileSchema = z.object({
         .nonnegative('Years of experience cannot be negative')
         .optional(),
 
-    isFresher: z
-        .boolean({
-            required_error: 'Fresher status is required',
-        })
+    details: z
+        .string()
         .optional(),
 
     currentCtc: z
-        .number({
-            required_error: 'Current CTC is required',
-        })
-        .nonnegative('CTC must be a non-negative number')
-        .max(99999.99, 'CTC must be within 5 digits and 2 decimal places')
+        .string()
+        .nullable()
         .optional(),
 
     resumeUrl: z
@@ -76,12 +71,9 @@ export const updateUserProfileSchema = z.object({
         .nonnegative('Location ID must be a non-negative number')
         .optional(),
 
-    currentCompanyId: z
-        .number({
-            required_error: 'Current company ID is required'
-        })
-        .int('Company ID must be an integer')
-        .nonnegative('Company ID must be a non-negative number')
+    currentCompany: z
+        .string()
+        .nullable()
         .optional(),
 });
 

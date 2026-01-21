@@ -88,7 +88,7 @@ class UserRepository extends BaseRepository<User> {
         return user;
     }
 
-    async findAllCandidates({limit, offset}:{limit: number, offset: number}){
+    async findAllCandidates({limit, offset, details}:{limit: number, offset: number, details: string}){
         const users = await this.model.findAndCountAll({
             attributes: ['fullName','email', 'phoneNo', 'id', 'graduationYear', 'created_at'],
             where: {
@@ -102,6 +102,12 @@ class UserRepository extends BaseRepository<User> {
                     where: {
                         name: 'jobseeker'
                     }
+                },
+                {
+                    association: User.associations.profile,
+                    where: {
+                        details: details 
+                    }
                 }
             ],
             order: [['created_at', 'DESC']],
@@ -112,7 +118,7 @@ class UserRepository extends BaseRepository<User> {
         return users ;
     }
 
-    async findAllCandidatesForCSV(): Promise<User[]>{
+    async findAllCandidatesForCSV({details}: {details: string}): Promise<User[]>{
         const users = await this.model.findAll({
             attributes: ['fullName','email', 'phoneNo', 'graduationYear'],
             where: {
@@ -126,6 +132,12 @@ class UserRepository extends BaseRepository<User> {
                     where: {
                         name: 'jobseeker'
                     },
+                },
+                {
+                    association: User.associations.profile,
+                    where: {
+                        details: details
+                    }
                 }
             ],
             order: [['created_at', 'DESC']],

@@ -3,7 +3,11 @@ export type RegisterUserDto = {
     email: string
     password: string
     phoneNo: string
-    graduationYear: string
+    graduationYear: string,
+    details: string,
+    currentCtc?: string, 
+    currentCompany?: string,
+    domain: string
 }
 
 export type LoginUserDto = {

@@ -43,14 +43,14 @@
     "@types/jsonwebtoken": "^9.0.10",
     "@types/multer": "^2.0.0",
     "@types/multer-s3": "^3.0.3",
-    "@types/node": "^22.15.29",
+    "@types/node": "^25.0.9",
     "@typescript-eslint/eslint-plugin": "^8.33.0",
     "@typescript-eslint/parser": "^8.33.0",
     "eslint": "^9.28.0",
     "eslint-plugin-simple-import-sort": "^12.1.1",
     "nodemon": "^3.1.10",
     "sequelize-cli": "^6.6.3",
-    "ts-node": "^1.7.1",
+    "ts-node": "^10.9.2",
     "typescript": "^5.8.3"
   }
 }

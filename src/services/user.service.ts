@@ -174,7 +174,7 @@ class UserService {
                 return c.get({ plain: true }) as User;
             });
 
-            if(details == 'Fresher'){
+            if(details == 'Student'){
                 const csv = json2csv(records, { keys: [ 'fullName', 'email', 'phoneNo', 'graduationYear','profile.domain'], fieldTitleMap: { 'profile.domain': 'domain'} }, );
                 return csv;
             }else{

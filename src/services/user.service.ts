@@ -175,10 +175,10 @@ class UserService {
             });
 
             if(details == 'Fresher'){
-                const csv = json2csv(records, { keys: [ 'fullName', 'email', 'phoneNo', 'graduationYear','domain'] });
+                const csv = json2csv(records, { keys: [ 'fullName', 'email', 'phoneNo', 'graduationYear','profile.domain'], fieldTitleMap: { 'profile.domain': 'domain'} }, );
                 return csv;
             }else{
-                const csv = json2csv(records, { keys: [ 'fullName', 'email', 'phoneNo', 'graduationYear', 'profile.currentCtc', 'profile.currentCompany', 'profile.domain'] });
+                const csv = json2csv(records, { keys: [ 'fullName', 'email', 'phoneNo', 'graduationYear', 'profile.currentCtc', 'profile.currentCompany', 'profile.domain'], fieldTitleMap: {'profile.currentCtc': 'currentCtc', 'profile.currentCompany': 'currentCompany', 'profile.domain': 'domain'} });
                 return csv;
             }
 

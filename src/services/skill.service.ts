@@ -1,4 +1,5 @@
 
+import logger from '../configs/logger.config';
 import { CreateSkillDto, DeleteSkillDto, UpdateSkillDto } from '../dtos/skill.dto';
 import SkillRepository from '../repository/skill.repository';
 import UserRepository from '../repository/user.repository';
@@ -26,12 +27,14 @@ class SkillService {
 
         const roleNames = userRoles.roles?.map((role) => role.name);
         if(!roleNames) {
+            logger.error('No roles found');
             throw new NotFoundError('No roles found ');
         }
         
         const allowedRoles : allRole[] = ['admin', 'operations_admin'];
         roleNames.forEach((role) => {
             if (!allowedRoles.includes(role as allRole)) {
+                logger.error('User not authorized');
                 throw new UnauthorizedError('User not authorized');
             }
         });
@@ -57,10 +60,12 @@ class SkillService {
 
         const roleNames = userRoles ? userRoles.roles?.map((role) => role.name):null;
         if(!roleNames) {
+            logger.error('No roles found');
             throw new NotFoundError('No roles found ');
         }
         
         if(!roleNames?.includes('admin')){
+            logger.error('Not an admin');
             throw new UnauthorizedError('Not an admin');
         }
 
@@ -75,10 +80,12 @@ class SkillService {
 
         const roleNames = userRoles.roles?.map((role) => role.name);
         if(!roleNames) {
+            logger.error('No roles found');
             throw new NotFoundError('No roles found ');
         }
         
         if(!roleNames?.includes('admin')){
+            logger.error('Not an admin');
             throw new UnauthorizedError('Not an admin');
         }
 

@@ -1,3 +1,4 @@
+import logger from '../configs/logger.config';
 import { CreateRoleDto, DeleteRoleDto, GetRoleDto, UpdateRoleDto } from '../dtos/role.dto';
 import RoleRepository from '../repository/role.repository';
 import UserRepository from '../repository/user.repository';
@@ -26,10 +27,12 @@ class RoleService {
         
         const roleNames = userRoles.roles?.map((role) => role.name);
         if(!roleNames) {
+            logger.error('No roles found');
             throw new NotFoundError('No roles found ');
         }
                 
         if(!roleNames.includes('admin')){
+            logger.error('Not an admin');
             throw new UnauthorizedError('Not an admin');
         }
 
@@ -44,15 +47,18 @@ class RoleService {
         
         const roleNames = userRoles.roles?.map((role) => role.name);
         if(!roleNames) {
+            logger.error('No roles found');
             throw new NotFoundError('No roles found ');
         }
                 
         if(!roleNames.includes('admin')){
+            logger.error('Not an admin');
             throw new UnauthorizedError('Not an admin');
         }
 
         const check = await this.roleRepository.getRoles(name);
         if(check.length > 0){
+            logger.error('Role already exists');
             throw new BadRequestError('Role already exists');
         }
 
@@ -67,10 +73,12 @@ class RoleService {
         
         const roleNames = userRoles.roles?.map((role) => role.name);
         if(!roleNames) {
+            logger.error('No roles found');
             throw new NotFoundError('No roles found ');
         }
                 
         if(!roleNames.includes('admin')){
+            logger.error('Not an admin');
             throw new UnauthorizedError('Not an admin');
         }
 
@@ -87,10 +95,12 @@ class RoleService {
         
         const roleNames = userRoles.roles?.map((role) => role.name);
         if(!roleNames) {
+            logger.error('No roles found');
             throw new NotFoundError('No roles found ');
         }
                 
         if(!roleNames.includes('admin')){
+            logger.error('Not an admin');
             throw new UnauthorizedError('Not an admin');
         }
 
@@ -109,11 +119,13 @@ class RoleService {
         
         const roleNames = userRoles.roles?.map((role) => role.name);
         if(!roleNames) {
+            logger.error('No roles found');
             throw new NotFoundError('No roles found ');
         }
                 
         roleNames.forEach((role) => {
             if (!allowedRoles.includes(role as allRole)) {
+                logger.error('User not authorized');
                 throw new UnauthorizedError('User not authorized');
             }
         });

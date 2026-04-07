@@ -1,3 +1,4 @@
+import logger from '../configs/logger.config';
 import { CreateUserSkillDto, DeleteUserSkillDto } from '../dtos/userSkill.dto';
 import SkillRepository from '../repository/skill.repository';
 import UserRepository from '../repository/user.repository';
@@ -18,11 +19,13 @@ class UserSkillService {
     async createUserSkillsService(data: CreateUserSkillDto ) {
         const user = await this.userRepository.findById(data.userId);
         if (!user) {
+            logger.error('User not found');
             throw new NotFoundError('User not found');
         }
 
         const foundSkills = await this.skillRepository.validateSkillIds(data.skilldIds);
         if(foundSkills.length == 0) {
+            logger.error('Invalid skill IDs provided');
             throw new NotFoundError('Invalid skill IDs provided');
         }
 
@@ -36,11 +39,13 @@ class UserSkillService {
     async deleteUserSkillsService(data: DeleteUserSkillDto  ) {
         const user = await this.userRepository.findById(data.userId);
         if (!user) {
+            logger.error('User not found');
             throw new NotFoundError('User not found');
         }
 
         const skillExists = await this.userSkillRepository.findByBothId(data.userId, data.skillId);
         if (!skillExists) {
+            logger.error('Skill not found');
             throw new NotFoundError('Skill not found');
         }
         const userSkills = await this.userSkillRepository.deleteUserSkills(data.userId, data.skillId);

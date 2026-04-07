@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 
+import logger from '../configs/logger.config';
 import CountryRepository from '../repository/country.repository';
 import CountryService from '../services/country.service';
 
@@ -20,6 +21,7 @@ async function getCountryHandler(req: Request, res: Response, next: NextFunction
             error: {}
         });
     } catch (error) {
+        logger.error('country.controller/getCountryHandler ', {error});
         next(error);
     }
 }

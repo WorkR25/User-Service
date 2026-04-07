@@ -1,7 +1,6 @@
 import { Transaction } from 'sequelize';
 
 import logger from '../configs/logger.config';
-// import logger from '../configs/logger.config';
 import sequelize from '../db/models/sequelize';
 import { CreateLocationDto } from '../dtos/location.dto';
 import CityRepository from '../repository/city.repository';
@@ -48,6 +47,7 @@ class LocationService {
             // create state from country.id
                 countryId = checkCountry ? checkCountry.id : newCountry?.id ;
                 if(!countryId){
+                    logger.error('Country not mentioned');
                     throw new BadRequestError('Country not mentioned');
                 }
                 newState = await this.stateRepository.create({name : data.state, countryId}, transaction);
@@ -57,6 +57,7 @@ class LocationService {
             // create city from state.id
                 stateId= checkState ? checkState.id : newState?.id ;
                 if(!stateId){
+                    logger.error('State not mentioned');
                     throw new BadRequestError('State not mentioned');
                 }
                 await this.cityRepository.create({name: data.city, stateId}, transaction);
@@ -65,8 +66,8 @@ class LocationService {
             return data ;
             
         } catch (error) {
+            logger.error('createLocationService transaction',error);
             await transaction.rollback();
-            logger.error(error);
             throw error;  
         }
 

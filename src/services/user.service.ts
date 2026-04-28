@@ -12,6 +12,7 @@ import UserProfileRepository from '../repository/userProfile.repository';
 import UserRoleRepository from '../repository/userRole.repository';
 import { checkPassword, createToken, verifyToken } from '../utils/auth/auth';
 import { BadRequestError, InternalServerError, NotFoundError, UnauthorizedError } from '../utils/errors/app.error';
+import { formatter } from '../utils/helpers/date.helper';
 
 
 class UserService {
@@ -153,19 +154,22 @@ class UserService {
             throw new UnauthorizedError('Not an admin');
         }
 
-        const raw = await this.userRepository.findAllCandidatesForCSV({details});
+        const candidates: User[] = await this.userRepository.findAllCandidatesForCSV(details);
 
-        const records = raw.map((c) => {
-            return c.get({ plain: true }) as User;
-        });
+        const plainCandidates = candidates.map((candidate) => ({
+            ...candidate.toJSON(),
+            createdAt: formatter(candidate.createdAt)
+        }));
+
+        let csv: string;
 
         if(details == 'Student'){
-            const csv = json2csv(records, { keys: [ 'fullName', 'email', 'phoneNo', 'graduationYear','profile.domain'], fieldTitleMap: { 'profile.domain': 'domain'} }, );
-            return csv;
+            csv = json2csv(plainCandidates, { keys: [ 'fullName', 'email', 'phoneNo', 'graduationYear','profile.domain', 'createdAt'], fieldTitleMap: { 'profile.domain': 'domain', 'createdAt': 'leadCapturedAt' } }, );
         }else{
-            const csv = json2csv(records, { keys: [ 'fullName', 'email', 'phoneNo', 'graduationYear', 'profile.currentCtc', 'profile.currentCompany', 'profile.domain'], fieldTitleMap: {'profile.currentCtc': 'currentCtc', 'profile.currentCompany': 'currentCompany', 'profile.domain': 'domain'} });
-            return csv;
+            csv = json2csv(plainCandidates, { keys: [ 'fullName', 'email', 'phoneNo', 'graduationYear', 'profile.currentCtc', 'profile.currentCompany', 'profile.domain', 'createdAt'], fieldTitleMap: { 'profile.currentCtc': 'currentCtc', 'profile.currentCompany': 'currentCompany', 'profile.domain': 'domain', 'createdAt': 'leadCapturedAt' } });
         }
+
+        return csv;
     }
 
 

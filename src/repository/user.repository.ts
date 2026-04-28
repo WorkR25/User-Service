@@ -118,9 +118,9 @@ class UserRepository extends BaseRepository<User> {
         return users ;
     }
 
-    async findAllCandidatesForCSV({details}: {details: string}): Promise<User[]>{
-        const users = await this.model.findAll({
-            attributes: ['fullName','email', 'phoneNo', 'graduationYear'],
+    async findAllCandidatesForCSV(details: string): Promise<User[]>{
+        const candidates = await this.model.findAll({
+            attributes: ['fullName','email', 'phoneNo', 'graduationYear', 'createdAt'],
             where: {
                 deletedAt: {
                     [Op.eq]: null
@@ -128,22 +128,24 @@ class UserRepository extends BaseRepository<User> {
             },
             include: [
                 {
-                    association: User.associations.roles,
+                    association: this.model.associations.roles,
                     where: {
                         name: 'jobseeker'
                     },
+                    attributes: []
                 },
                 {
-                    association: User.associations.profile,
+                    association: this.model.associations.profile,
                     where: {
                         details: details
-                    }
+                    },
+                    attributes: ['yearsOfExperience', 'currentCtc', 'currentCompany', 'domain']
                 }
             ],
             order: [['created_at', 'DESC']],
         });
 
-        return users ;
+        return candidates;
     }
 
     async getUserRolesById(userId: number){

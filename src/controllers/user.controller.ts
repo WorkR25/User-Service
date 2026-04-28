@@ -64,6 +64,7 @@ async function uploadResumeHandler(req: Request, res: Response) {
         });
     }
 
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const fileUrl = (req.file as any).location;
 

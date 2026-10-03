@@ -13,6 +13,7 @@ import UserRoleRepository from '../repository/userRole.repository';
 import { checkPassword, createToken, verifyToken } from '../utils/auth/auth';
 import { BadRequestError, InternalServerError, NotFoundError, UnauthorizedError } from '../utils/errors/app.error';
 import { formatter } from '../utils/helpers/date.helper';
+import leadNurtureService from './leadNurture.service';
 
 
 class UserService {
@@ -53,22 +54,36 @@ class UserService {
 
         const { currentCtc, currentCompany, details, domain } = userData;
         const transaction = await sequelize.transaction();
+        let newUser: User;
         try {
-            const newUser = await this.userRepository.create(userData, transaction);
+            newUser = await this.userRepository.create(userData, transaction);
             await this.userProfileRepository.create({ userId: newUser.id, currentCtc, currentCompany, details, domain}, transaction);
             await this.userRoleRepository.createUserRole({userId: newUser.id, roleId: roleId, transaction});
             await transaction.commit();
-
-            const jwtToken = createToken({id: newUser.id, email: newUser.email});
-
-            return jwtToken ;
-
         } catch (error){
             await transaction.rollback();
             logger.error('Error while creating user ', {error});
             throw new InternalServerError('Error while creating user ');
         }
-        
+
+        const jwtToken = createToken({id: newUser.id, email: newUser.email});
+
+        // Product company readiness check email/WhatsApp: runs only after the commit and only enqueues for Working Professionals
+        // (decided from `details` in the request body). Deliberately NOT awaited: the signup response
+        // must never wait on Redis. handleWorkrSignup never rejects, logs its own failures, and the
+        // job id makes a late enqueue idempotent.
+        void leadNurtureService.handleWorkrSignup({
+            userId: newUser.id,
+            fullName: newUser.fullName,
+            email: newUser.email,
+            phoneNo: newUser.phoneNo,
+            details,
+            domain,
+            graduationYear: userData.graduationYear,
+            signedUpAt: newUser.createdAt
+        });
+
+        return jwtToken;
     }
 
     async loginService(userData: LoginUserDto){

@@ -19,10 +19,18 @@ class UserRepository extends BaseRepository<User> {
         const data = await this.model.findAndCountAll({
             where: {
                 fullName: {
-                    [Op.like]: `${fullName}%`,
+                    // Match anywhere in the name ("akhila" finds "Avula Akhila").
+                    [Op.like]: `%${fullName.replace(/[\\%_]/g, (char) => `\\${char}`)}%`,
                 },
             },
             attributes: { exclude: ['password'] },
+            include: [
+                {
+                    association: User.associations.profile,
+                    required: false,
+                },
+            ],
+            distinct: true,
             limit,
             offset,
             order: [['createdAt', 'DESC']],
@@ -32,7 +40,11 @@ class UserRepository extends BaseRepository<User> {
     }
 
     async findByEmailWithoutPassword(email: string): Promise<User | null>{
-        const checkUser = await User.findOne({where : {email}, attributes: { exclude: ['password']}});
+        const checkUser = await User.findOne({
+            where : {email},
+            attributes: { exclude: ['password']},
+            include: [{ association: User.associations.profile, required: false }],
+        });
         return checkUser;
     }
 

@@ -1,0 +1,53 @@
+# WorkR User-Service - shared WorkR server (runs next to notification-service + Redis).
+# Run through deploy/deploy.sh, or manually:
+#   docker compose --env-file deploy/.env.production -f deploy/docker-compose.yml up -d user-service
+name: workr-user-service
+
+services:
+  user-service:
+    build:
+      context: ..
+      target: runtime
+      args:
+        GIT_SHA: ${GIT_SHA:-unknown}
+    image: workr/user-service:latest
+    container_name: workr-user-service
+    restart: unless-stopped
+    # Run exactly ONE instance: the lead-nurture scheduler runs in-process (node-cron).
+    env_file: .env.production
+    environment:
+      NODE_ENV: production
+      PORT: "3000"          # container-internal port; change HOST_PORT in .env.production to change the public one
+    ports:
+      - "${HOST_BIND:-127.0.0.1}:${HOST_PORT:-3000}:3000"
+    networks: [workr-net]   # reaches workr-redis and notification-service by name
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - user-service-logs:/app/logs
+    logging:
+      driver: json-file
+      options: { max-size: "10m", max-file: "3" }
+    stop_grace_period: 20s
+
+  # One-off: applies Sequelize migrations (never started by `up`)
+  migrate:
+    profiles: [migrate]
+    build:
+      context: ..
+      target: migrate
+    image: workr/user-service-migrate:latest
+    env_file: .env.production
+    environment:
+      NODE_ENV: production
+    networks: [workr-net]
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+networks:
+  workr-net:
+    external: true      # created by deploy.sh (docker network create workr-net)
+    name: workr-net
+
+volumes:
+  user-service-logs:

@@ -1,0 +1,14 @@
+node_modules
+dist
+logs
+.git
+.github
+.env
+.env.*
+*.log
+.DS_Store
+deploy
+Dockerfile
+.dockerignore
+Claude outputs
+*.md

@@ -4,4 +4,6 @@ dist/
 logs/
 Claude outputs/
 
-deploy/.env.production
+# deploy.sh state / previous build
+.deploy/
+dist.prev/
